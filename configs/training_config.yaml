@@ -1,0 +1,39 @@
+# 训练配置文件
+model:
+  name: "Qwen/Qwen2-0.5B"  # 使用小模型便于快速体验
+  load_in_4bit: true        # 4bit量化加速
+  device_map: "auto"
+
+lora:
+  r: 8                      # LoRA rank
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+  task_type: "CAUSAL_LM"
+
+training:
+  output_dir: "./outputs/qwen-lora"
+  num_train_epochs: 2
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  warmup_steps: 10
+  logging_steps: 5
+  save_steps: 50
+  eval_steps: 50
+  save_total_limit: 2
+  load_best_model_at_end: true
+  evaluation_strategy: "steps"
+  fp16: false
+  gradient_checkpointing: false
+  report_to: "tensorboard"
+
+data:
+  max_length: 512
+  train_file: "./data/train.jsonl"
+  eval_file: "./data/eval.jsonl"
